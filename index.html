@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Blessed Store</title>
+    <style>
+         
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #020202;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            width: 80px;
+            height: auto;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .search-container {
+            margin: 20px 0;
+        }
+        .search-container input {
+            padding: 10px;
+            width: 300px;
+            border: none;
+            border-radius: 5px;
+        }
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .filter-container select {
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .sidebar {
+            width: 25%;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar h3 {
+            margin-top: 0;
+        }
+        .offers {
+            width: 75%;
+            padding: 20px;
+            background: #f9f9f9;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 20px;
+        }
+        .offer {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            transition: transform 0.3s;
+            text-align: center; 
+        }
+        .offer:hover {
+            transform: scale(1.02);
+        }
+        .offer img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .price {
+            color: #28a745;
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        .btn {
+            background: #4f6986;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        footer {
+            background: #0a0a0a;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        /* Estilos para el carrito emergente */
+        .cart-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 300px;
+        }
+        .cart-popup h3 {
+            margin-top: 0;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .cart-item span {
+            margin-right: 10px;
+        }
+        .cart-popup button {
+            background: #000000;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        .cart-btn {
+            background: #020202;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>   
+    <img src="logotheblessed.jpeg" alt="Logo de The Blessed Store">
+    <h1>Venta de Celulares</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar modelos..." onkeyup="filterProducts()">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#">Productos</a></li>
+            <li><a href="#">Ofertas</a></li>
+            <li><a href="https://wa.me/76859347" class="whatsapp-btn" target="_blank">Contactanos por WhatsApp</a></li> <!-- Enlace de WhatsApp -->
+        </ul>
+    </nav>
+</header>
+
+<div class="filter-container">
+    <select id="sortSelect" onchange="sortProducts()">
+        <option value="">Ordenar por</option>
+        <option value="priceAsc">Precio: Menor a Mayor</option>
+        <option value="priceDesc">Precio: Mayor a Menor</option>
+        <option value="nameAsc">Nombre: A a Z</option>
+        <option value="nameDesc">Nombre: Z a A</option>
+    </select>
+</div>
+     <div class="offers" id="productList">
+        <div class="offer" data-price="999.99">
+            <img src="IPHONE X.jpeg" alt="Celular Modelo B">
+            <h3>iphone x</h3>
+            <p>El diseño,la excelente pantalla OLED,el zoom de la camara,el chip bionico A11</p>
+            <p class="price">3000 BOB</p>
+            <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>   
+        </div>
+        <div class="offer" data-price="799.99">
+            <img src="xs max.jpeg" alt="Celular Modelo B" width="160px">
+            <h3>iphone xs Max</h3>
+            <p>ofrece una pantalla OLED amplia y de alta calidad,una camara trasera Smart HDR</p>
+            <p class="price">4000 BOB</p>
+            <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="599.99">
+            <img src="11 normal.jpeg" alt="Celular">
+            <h3>Iphone 11 normal</h3>
+            <p>Cuenta con una pantalla LCD de 6,1 pulgadas, el display es IPS lo que garantiza una imagen exelente</p>
+            <p class="price">3600 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="1099.99">
+            <img src="11 pro max.jpeg" alt="Celular">
+            <h3>Iphone 11proMax</h3>
+            <p>Con una pantalla OLED de 6,5 pulgadas,una camara triple de 12 megapixeles y una bateria de larga duracion</p>
+            <p class="price">5600 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="899.99">
+            <img src="12 normal.jpeg" alt="Celular">
+            <h3>Iphone 12 normal</h3>
+            <p>Tiene una camara mas,un zoom optico de 2x 12MP con una apertura f/2.0, esta equipado con un escaner LiDAR para mejor distancia que permite medir mejor las distancias en la realidad aumentada</p>
+            <p class="price">5500 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="699.99">
+            <img src="12 pro.jpeg" alt="Celular">
+            <h3>Iphone 12pro</h3>
+            <p>Con 6GB de RAM frente a los 4GB de RAM del iphone12, en el uso diario la diferencia es insignificante exceptos en los juegos mas pesados</p>
+            <p class="price">6700 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="1199.99">
+            <img src="12 pro max.jpeg" alt="Celular">
+            <h3>Iphone 12proMax</h3>
+            <p>Puede presentar algunos problemas de sonido debido a un componente que puede generar una falla en el modulo del receptor</p>
+            <p class="price">6800 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="799.99">
+            <img src="13 normal.jpeg" alt="Celular">
+            <h3>Iphone 13 normal</h3>
+            <p>Cuenta con el sistema de camara dual mas avanzado un chip ultra rapido y un gran salto en la duracion de la bateria</p>
+            <p class="price">7000 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="899.99">
+            <img src="13 pro.jpeg" alt="Celular">
+            <h3>Iphone 13pro</h3>
+            <p>Su sensor trasero gana en luminosidad y calidad gracias a una mayor apertura,pero tambien a la presencia de un zoom optico de 3 aumentos</p>
+            <p class="price">7150 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="13 pro max.jpeg" alt="Celular">
+            <h3>Iphone 13proMax</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">7600 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="14 normal.jpeg" alt="Celular">
+            <h3>Iphone 14 normal</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">8200 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="14 pro.jpeg" alt="Celular">
+            <h3>Iphone 14pro</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">8300 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+           
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="14 pro max.jpeg" alt="Celular">
+            <h3>Iphone 14proMax</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">8500 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="15 normal.jpeg".jpeg" alt="Celular">
+            <h3>Iphone 15 normal</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">10000 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="15 pro.jpeg".jpeg" alt="Celular">
+            <h3>Iphone 15pro</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">12400 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="15 pro max.jpeg".jpeg" alt="Celular">
+            <h3>Iphone 15proMax</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">14000BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="16 normal.jpeg".jpeg" alt="Celular">
+            <h3>Iphone 16 normal</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price"> 19000 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="16 pro.jpeg".jpeg" alt="Celular">
+            <h3>Iphone 16pro</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">10000 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+        <div class="offer" data-price="999.99">
+            <img src="16 pro max.jpeg".jpeg" alt="Celular">
+            <h3>Iphone 16proMax</h3>
+            <p>Pantalla OLED y diseño delgado.</p>
+            <p class="price">10000 BOB</p>
+        <a href="https://wa.me/76859347?text=Hola,%20quiero%20reservar%20el%20iPhone%20X%20de%203000%20BOB" class="btn">Reservar</a>
+            
+        </div>
+    </div>
+</div>
+
+<a href="#" class="back-to-top">Volver Arriba</a>
+
+<!-- Carrito emergente -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-popup" id="cartPopup">
+    <h3>Carrito de Compras</h3>
+    <div id="cartItems"></div>
+    <div class="cart-item">
+        <strong>Subtotal:</strong> <span id="subtotal">$0.00</span>
+    </div>
+    <button onclick="clearCart()">Vaciar Carrito</button>
+    <button onclick="closeCart()">Cerrar</button>
+</div>
+
+<footer>
+    <p>&copy; 2024 Venta de Celulares. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+    let cart = [];
+    let subtotal = 0;
+
+    function filterProducts() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const offers = document.getElementsByClassName('offer');
+
+        for (let i = 0; i < offers.length; i++) {
+            const title = offers[i].getElementsByTagName('h3')[0].innerText.toLowerCase();
+            if (title.includes(filter)) {
+                offers[i].style.display = '';
+            } else {
+                offers[i].style.display = 'none';
+            }
+        }
+    }
+
+    function addToCart(name, price) {
+        cart.push({ name, price });
+        subtotal += price;
+        updateCart();
+        showCart();
+    }
+
+    function updateCart() {
+        const cartItemsContainer = document.getElementById('cartItems');
+        cartItemsContainer.innerHTML = '';
+        cart.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+                <span>${item.name} - $${item.price.toFixed(2)}</span>
+                <button class="btn" onclick="removeFromCart(${index})">Quitar</button>
+            `;
+            cartItemsContainer.appendChild(div);
+        });
+        document.getElementById('subtotal').innerText = $${subtotal.toFixed(2)};
+    }
+
+    function showCart() {
+        document.getElementById('cartPopup').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeCart() {
+        document.getElementById('cartPopup').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    function clearCart() {
+        cart = [];
+        subtotal = 0;
+        updateCart();
+        closeCart();
+    }
+
+    function removeFromCart(index) {
+        const removedItem = cart.splice(index, 1)[0];
+        subtotal -= removedItem.price;
+        updateCart();
+    }
+
+    function sortProducts() {
+        const sortValue = document.getElementById('sortSelect').value;
+        const offers = Array.from(document.getElementsByClassName('offer'));
+
+        if (sortValue === 'priceAsc') {
+            offers.sort((a, b) => parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price')));
+        } else if (sortValue === 'priceDesc') {
+            offers.sort((a, b) => parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price')));
+        } else if (sortValue === 'nameAsc') {
+            offers.sort((a, b) => a.getElementsByTagName('h3')[0].innerText.localeCompare(b.getElementsByTagName('h3')[0].innerText));
+        } else if (sortValue === 'nameDesc') {
+            offers.sort((a, b) => b.getElementsByTagName('h3')[0].innerText.localeCompare(a.getElementsByTagName('h3')[0].innerText));
+        }
+
+        const productList = document.getElementById('productList');
+        productList.innerHTML = '';
+        offers.forEach(offer => productList.appendChild(offer));
+    }
+</script>
+
+</body>
+</html>
